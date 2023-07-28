@@ -30,13 +30,108 @@
 
         <section>
           <h2>목차</h2>
-          <ul>
+          <ol>
             <li>개요</li>
-            <li>SCP를 이용한 서버간 파일이동</li>
+            <li>SCP로 서버간 파일이동</li>
             <li>DB 적재</li>
-            <li>쿼리 테스트</li>
-            <li>참고</li>
+            <li>SQL 쿼리 테스트</li>
+            <li>참고(노션링크)</li>
+          </ol>
+        </section>
+
+        <section data-transition="slide" data-background="#0064a5">
+          <h2>SQL 쿼리 테스트</h2>
+        </section>
+
+        <section data-transition="slide" data-background="#0064a5">
+          <h4>원격 서버 데이터베이스 접근</h4>
+          <pre><code class="hljs sh" data-trim data-line-numbers="1-2|4-5">
+            # ssh [user@]hostname [command]
+            ssh ppark@211.178.39.246 -p 12522
+
+            # psql -h {호스트명} -p {포트번호} -U {사용자명} -d {데이터베이스명}
+            psql -h localhost -p 5432 -U postgres -d hils
+          </code></pre>
+          <ul>
+            <li style="font-size: 20px">
+              보안상 원격 서버의 데이터베이스에 바로 접근하지않고, 우선 ssh로 원격 서버에 접근한
+              다음에 데이터베이스에 접근하는 것이 국룰이다.
+            </li>
+            <li style="font-size: 20px">
+              ssh는 일반적으로 원격 시스템에 로그인하고 명령을 실행하는 데 사용된다. 터널링 및 포트
+              포워딩에도 사용된다.
+            </li>
+            <li style="font-size: 20px">
+              psql은 PostgreSQL 대화형 터미널 프로그램으로 대화형으로 SQL 명령을 편집/실행 할 수
+              있다.
+            </li>
           </ul>
+        </section>
+
+        <section data-transition="slide" data-background="#0064a5">
+          <h4>모든 카테고리 조회</h4>
+          <pre><code class="hljs SQL" data-trim>
+            SELECT * FROM cases_hindcasts.categories;
+          </code></pre>
+        </section>
+
+        <section data-transition="slide" data-background="#0064a5">
+          <h4>모든 변수 조회</h4>
+          <pre><code class="hljs SQL" data-trim>
+            SELECT * FROM cases_hindcasts.variables;
+          </code></pre>
+        </section>
+
+        <section data-transition="slide" data-background="#0064a5">
+          <h4>데이터셋별 모든 변수 조회</h4>
+          <pre><code class="hljs SQL" data-trim>
+            -- 데이터셋 식별자가 1에 해당하는 모든 변수 조회
+            SELECT
+                variables.var_id,
+                variables.var_name,
+                variables.var_long_name,
+                variables.var_standard_name,
+                variables.var_units,
+                variables.dataset_id
+            FROM cases_hindcasts.variables
+            INNER JOIN cases_hindcasts.datasets ON
+                datasets.dataset_id = variables.dataset_id
+            WHERE 
+                datasets.dataset_id = 1;
+          </code></pre>
+        </section>
+
+        <section data-transition="slide" data-background="#0064a5">
+          <h4>카테고리별 모든 데이터셋 조회</h4>
+          <pre><code class="hljs SQL" data-trim>
+            -- 태풍 카테고리에 해당하는 모든 데이터셋 조회
+            SELECT
+                datasets.dataset_id,
+                datasets.dataset_name,
+                datasets.category_id,
+                datasets.lat_num,
+                datasets.time_start,
+                datasets.time_end
+            FROM cases_hindcasts.datasets
+            INNER JOIN cases_hindcasts.categories
+                ON categories.category_id = datasets.category_id
+            WHERE
+                category_name=COALESCE(NULL, 'typhoon');
+          </code></pre>
+        </section>
+
+        <section data-transition="slide" data-background="#0064a5">
+          <h4>연도별 모든 데이터셋 조회</h4>
+          <pre><code class="hljs SQL" data-trim>
+            -- 2021년에 해당하는 모든 데이터셋 조회
+            SELECT
+                dataset_id,
+                dataset_name
+            FROM cases_hindcasts.datasets
+            WHERE 
+                EXTRACT(year FROM time_start) = 2021 OR 
+                EXTRACT(year FROM time_end) = 2021;
+          </code></pre>
         </section>
       </div>
     </div>
