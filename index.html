@@ -21,7 +21,7 @@
       <div class="slides">
         <section>
           <img data-src="dist/images/overview/intro.jpg" style="height: 400px" />
-          <h2>DB 적재 프로세스관련 기술공유</h2>
+          <h2>DB 적재 관련 기술공유</h2>
           <p>
             <small
               >Created by 동훈@<a href="http://all4land.com/" target="_blank">올포랜드</a>
@@ -34,13 +34,43 @@
           <ol>
             <li>개요</li>
             <li>SCP로 원격 호스트간 파일 이동</li>
+            <li>PSQL을 이용한 SQL 쿼리</li>
             <li>DB 적재</li>
-            <li>SQL 쿼리 테스트</li>
           </ol>
         </section>
 
-        <section data-transition="slide" data-background="#ffffff">
+        <section data-transition="slide">
           <h2>개요</h2>
+        </section>
+
+        <section data-transition="slide">
+          <h4>알아야 할 것들</h4>
+          <ul>
+            <li style="font-size: 30px">SSH - 원격 호스트 접속 프로그램</li>
+            <li style="font-size: 30px">SCP - 원격 호스트 간 파일 이동 프로그램</li>
+            <li style="font-size: 30px">
+              PSQL - 대화형 PostgreSQL 프로그램(적재 및 SQL 쿼리 실행)
+            </li>
+            <li style="font-size: 30px">
+              파이썬 가상환경(virtualenv) - netCDF 파일을 변환하고 DB에 적재하는데 필요한 파이썬
+              라이브러리가 다른 프로젝트랑 꼬이지 않도록 관리 해주는 환경
+            </li>
+          </ul>
+        </section>
+
+        <section data-transition="slide">
+          <h4>DB 설계도 - 전체</h4>
+          <img data-src="dist/images/overview/erd_1.png" />
+        </section>
+
+        <section data-transition="slide">
+          <h4>DB 설계도 - 위험사례 재현정보</h4>
+          <img data-src="dist/images/overview/erd_2.png" />
+        </section>
+
+        <section data-transition="slide">
+          <h4>DB 적재 순서도</h4>
+          <img data-src="dist/images/overview/flowchart.png" />
         </section>
 
         <section data-transition="slide" data-background="#4d7e65">
@@ -126,12 +156,8 @@
           <img data-src="dist/images/scp/scp_2.jpg" />
         </section>
 
-        <section data-transition="slide" data-background="#008bb9">
-          <h2>DB 적재</h2>
-        </section>
-
         <section data-transition="slide" data-background="#0064a5">
-          <h2>SQL 쿼리 테스트</h2>
+          <h2>PSQL을 이용한 SQL 쿼리</h2>
         </section>
 
         <section data-transition="slide" data-background="#0064a5">
@@ -261,6 +287,10 @@
           <h4>연도별 모든 데이터셋 조회</h4>
           <img data-src="dist/images/sql/sql_query_4.jpg" />
         </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h2>DB 적재</h2>
+        </section>
       </div>
     </div>
 
@@ -274,6 +304,7 @@
       // - https://revealjs.com/config/
       Reveal.initialize({
         hash: true,
+        slideNumber: 'c/t',
 
         // Learn about plugins: https://revealjs.com/plugins/
         plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
