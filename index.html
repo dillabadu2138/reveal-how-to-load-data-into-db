@@ -20,6 +20,7 @@
     <div class="reveal">
       <div class="slides">
         <section>
+          <img data-src="dist/images/overview/intro.jpg" style="height: 400px" />
           <h2>DB 적재 프로세스관련 기술공유</h2>
           <p>
             <small
@@ -32,10 +33,101 @@
           <h2>목차</h2>
           <ol>
             <li>개요</li>
-            <li>SCP로 서버간 파일이동</li>
+            <li>SCP로 원격 호스트간 파일 이동</li>
             <li>DB 적재</li>
             <li>SQL 쿼리 테스트</li>
           </ol>
+        </section>
+
+        <section data-transition="slide" data-background="#ffffff">
+          <h2>개요</h2>
+        </section>
+
+        <section data-transition="slide" data-background="#4d7e65">
+          <h2>SCP로 원격 호스트간 파일 이동</h2>
+          <p></p>
+        </section>
+
+        <section data-transition="slide" data-background="#4d7e65">
+          <h4>SCP란?</h4>
+          <p>
+            <small
+              >데이터를 DB에 적재하기에 앞서 all4ocean 원격 호스트 서버에 위치한 netCDF 파일들을
+              DB가 위치한 hils 원격 호스트 서버로 복사해야 한다. 하드 드라이버에 옮겨서 두 번
+              이동하는거 보다 훨씬 효율적이다.</small
+            >
+          </p>
+          <img data-src="dist/images/scp/scp_1.png" />
+        </section>
+
+        <section data-transition="slide" data-background="#4d7e65">
+          <h4>SCP 문법</h4>
+          <pre><code class="hljs sh" data-trim>
+            scp [SOURCE] [TARGET] [OPTIONS]
+          </code></pre>
+          <ul>
+            <li style="font-size: 20px">
+              scp는 두 개의 위치 간에 파일 및 디렉터리를 안전하게 copy 하도록 도와주는 커맨드 라인
+              유틸리티 프로그램이다.
+            </li>
+            <li style="font-size: 20px">
+              SOURCE와 TARGET으로 로컬 경로를 지정하거나 [username@]host:[path] 형식으로 원격
+              호스트의 경로를 지정할 수 있다.
+            </li>
+            <ul>
+              <li style="font-size: 20px">
+                SOURCE는 우리가 복사해서 가져올 파일 또는 디렉터리 경로
+              </li>
+              <li style="font-size: 20px">
+                TARGET은 우리가 복사한 것을 갔다 붙혀넣을 파일 또는 디렉터리 경로
+              </li>
+            </ul>
+            <li style="font-size: 20px">
+              OPTIONS은 너무 많은데, 우리가 꼭 알아야 할 것은 -P와 -r 옵션이다.
+            </li>
+            <ul>
+              <li style="font-size: 20px">-P - 원격 호스트에 연결할 포트번호 지정</li>
+              <li style="font-size: 20px">
+                -r - 하위 디렉터리를 포함한 모든 디텍토리를 재귀적으로(recursively) 복사
+              </li>
+            </ul>
+          </ul>
+        </section>
+
+        <section data-transition="slide" data-background="#4d7e65">
+          <h4>SCP 예시</h4>
+          <pre><code class="hljs sh" data-trim data-line-numbers="1-2|4-7"><script type="text/template" >
+            # ssh [user@]hostname [command]
+            ssh ppark@211.178.39.246 -p 12522
+
+            # scp [SOURCE] [TARGET] [OPTIONS]
+            scp -r -P 7001 \
+            opr@211.178.39.246:/home/opr/jspark/00_PROJECT/2022y/02_1MW/01_rawdata/04_interm/03_HYCOM/01_typhoon/20110626 \
+            /home/ppark/projects/hilsdb/data/cases_hindcasts/typhoons
+          </script></code></pre>
+          <ul>
+            <li style="font-size: 20px">
+              먼저 ssh로 hils 원격 호스트 서버에 접속한 다음에 scp로 다른 원격 호스트 서버인
+              all4ocean에 위치한 netCDF 파일을 가져와 보자. 따라서, SOURCE는 [username@]host:[path]
+              형식가 되는데 TARGET은 이미 hils에 접속한 상태이므로 로컬 경로 형식이 된다.
+            </li>
+            <li style="font-size: 20px">
+              반대로 all4ocean에 접속해서 할 수도 있다. 그러면 SOURCE가 로컬 경로 형식이고 TARGET이
+              [username@]host:[path] 형식이 된다.
+            </li>
+            <li style="font-size: 20px">
+              ssh는 일반적으로 원격 호스트에 로그인하고 명령을 실행하는 데 사용된다.
+            </li>
+          </ul>
+        </section>
+
+        <section data-transition="slide" data-background="#4d7e65">
+          <h4>SCP 예시</h4>
+          <img data-src="dist/images/scp/scp_2.jpg" />
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h2>DB 적재</h2>
         </section>
 
         <section data-transition="slide" data-background="#0064a5">
