@@ -20,7 +20,7 @@
     <div class="reveal">
       <div class="slides">
         <section>
-          <h2>DB 적재 기술공유</h2>
+          <h2>DB 적재 프로세스관련 기술공유</h2>
           <p>
             <small
               >Created by 동훈@<a href="http://all4land.com/" target="_blank">올포랜드</a>
@@ -35,7 +35,6 @@
             <li>SCP로 서버간 파일이동</li>
             <li>DB 적재</li>
             <li>SQL 쿼리 테스트</li>
-            <li>참고(노션링크)</li>
           </ol>
         </section>
 
@@ -54,7 +53,7 @@
           </code></pre>
           <ul>
             <li style="font-size: 20px">
-              보안상 원격 서버의 데이터베이스에 바로 접근하지않고, 우선 ssh로 원격 서버에 접근한
+              보안상 원격 서버의 데이터베이스에 바로 접근하지 않고, 우선 ssh로 원격 서버에 접근한
               다음에 데이터베이스에 접근하는 것이 국룰이다.
             </li>
             <li style="font-size: 20px">
@@ -69,6 +68,29 @@
         </section>
 
         <section data-transition="slide" data-background="#0064a5">
+          <h4>유용한 psql 커맨드</h4>
+          <pre><code class="hljs SQL" data-trim data-line-numbers="1-2|4-5|7-8|10-11|13-14|16-17">
+            -- 모든 데이터베이스 목록보기 
+            \l
+
+            -- 모든 스키마 목록보기
+            \dn
+
+            -- 모든 테이블 목록보기
+            \dt
+
+            -- 특정 스키마 내의 모든 테이블 목록보기
+            \dt {schema_name}.*
+
+            -- psql 스크린 클리어하기
+            \! clear
+
+            -- psql 커맨드라인 세션 종료하기
+            \q
+          </code></pre>
+        </section>
+
+        <section data-transition="slide" data-background="#0064a5">
           <h4>모든 카테고리 조회</h4>
           <pre><code class="hljs SQL" data-trim>
             SELECT * FROM cases_hindcasts.categories;
@@ -76,10 +98,8 @@
         </section>
 
         <section data-transition="slide" data-background="#0064a5">
-          <h4>모든 변수 조회</h4>
-          <pre><code class="hljs SQL" data-trim>
-            SELECT * FROM cases_hindcasts.variables;
-          </code></pre>
+          <h4>모든 카테고리 조회</h4>
+          <img data-src="dist/images/sql/sql_query_1.jpg" />
         </section>
 
         <section data-transition="slide" data-background="#0064a5">
@@ -102,6 +122,11 @@
         </section>
 
         <section data-transition="slide" data-background="#0064a5">
+          <h4>데이터셋별 모든 변수 조회</h4>
+          <img data-src="dist/images/sql/sql_query_2.jpg" />
+        </section>
+
+        <section data-transition="slide" data-background="#0064a5">
           <h4>카테고리별 모든 데이터셋 조회</h4>
           <pre><code class="hljs SQL" data-trim>
             -- 태풍 카테고리에 해당하는 모든 데이터셋 조회
@@ -109,7 +134,6 @@
                 datasets.dataset_id,
                 datasets.dataset_name,
                 datasets.category_id,
-                datasets.lat_num,
                 datasets.time_start,
                 datasets.time_end
             FROM cases_hindcasts.datasets
@@ -121,17 +145,29 @@
         </section>
 
         <section data-transition="slide" data-background="#0064a5">
+          <h4>카테고리별 모든 데이터셋 조회</h4>
+          <img data-src="dist/images/sql/sql_query_3.jpg" />
+        </section>
+
+        <section data-transition="slide" data-background="#0064a5">
           <h4>연도별 모든 데이터셋 조회</h4>
           <pre><code class="hljs SQL" data-trim>
             -- 2021년에 해당하는 모든 데이터셋 조회
             SELECT
                 dataset_id,
-                dataset_name
+                dataset_name,
+                datasets.time_start,
+                datasets.time_end
             FROM cases_hindcasts.datasets
             WHERE 
-                EXTRACT(year FROM time_start) = 2021 OR 
-                EXTRACT(year FROM time_end) = 2021;
+                EXTRACT(year FROM time_start) = 2012 OR 
+                EXTRACT(year FROM time_end) = 2012;
           </code></pre>
+        </section>
+
+        <section data-transition="slide" data-background="#0064a5">
+          <h4>연도별 모든 데이터셋 조회</h4>
+          <img data-src="dist/images/sql/sql_query_4.jpg" />
         </section>
       </div>
     </div>
