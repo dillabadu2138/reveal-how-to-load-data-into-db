@@ -305,6 +305,276 @@
         <section data-transition="slide" data-background="#008bb9">
           <h2>변환 및 적재 프로그램</h2>
         </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>VSCode</h4>
+          <img data-src="dist/images/ingestion/vscode_1.jpg" style="height: 400px" />
+          <p>
+            <small
+              >다운로드 받으려면
+              <a href="https://code.visualstudio.com/" target="_blank">이 링크</a>로
+              이동해라.</small
+            >
+          </p>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>VSCode 장점</h4>
+          <img data-src="dist/images/ingestion/vscode_2.jpg" style="height: 400px" />
+          <p>
+            <small
+              >엄청나게 많은 확장자들이 있다. 그 중에서 로컬 PC에서 원격 서버 개발을 할 때, 우리가
+              유용하게 쓸 확장자로는 Remote - SSH가 있다.</small
+            >
+          </p>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>VSCode 원격 개발 확장자 설치</h4>
+          <img data-src="dist/images/ingestion/vscode_3.jpg" style="height: 400px" />
+          <p>
+            <small>왼쪽의 확장자 탭을 클릭해서 Remote - SSH를 검색한다.</small>
+          </p>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>VSCode 원격 개발 설정 1</h4>
+          <img data-src="dist/images/ingestion/vscode_4.jpg" style="height: 400px" />
+          <p>
+            <small>VSCode 편집기 좌하단을 보면 로컬 환경인지 원격 개발 환경인지 알 수 있다.</small>
+          </p>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>VSCode 원격 개발 설정 2</h4>
+          <img data-src="dist/images/ingestion/vscode_5.jpg" style="height: 400px" />
+          <p>
+            <small>우선 SSH 호스트 구성을 선택해서 설정 사항을 저장하자.</small>
+          </p>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>VSCode 원격 개발 설정 3</h4>
+          <img data-src="dist/images/ingestion/vscode_6.jpg" style="height: 400px" />
+          <p>
+            <small>~\.ssh\config 파일을 선택한다.</small>
+          </p>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>VSCode 원격 개발 설정 4</h4>
+          <img data-src="dist/images/ingestion/vscode_7.jpg" style="height: 400px" />
+          <p>
+            <small>Host는 마음대로 정하고, 나머지는 서버 주소, 유저명, 포트번호를 입력한다.</small>
+          </p>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>VSCode 원격 개발 설정 5</h4>
+          <img data-src="dist/images/ingestion/vscode_8.jpg" style="height: 400px" />
+          <p>
+            <small>이제 내가 지정한 이름만 선택해서 연결할 수 있다.</small>
+          </p>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>VSCode 원격 개발 설정 6</h4>
+          <img data-src="dist/images/ingestion/vscode_9.jpg" style="height: 400px" />
+          <p>
+            <small>변환 및 적재 관련 프로젝트는 /home/ppark/projects/hilsdb에 저장되어 있다.</small>
+          </p>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>VSCode 원격 개발 설정 7</h4>
+          <img data-src="dist/images/ingestion/vscode_10.jpg" style="height: 400px" />
+          <p>
+            <small>이제 여기서 코드를 수정하거나 실행할 수 있다.</small>
+          </p>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>VSCode 원격 개발 설정 8</h4>
+          <img data-src="dist/images/ingestion/vscode_11.jpg" style="height: 400px" />
+          <p>
+            <small>터미널 창을 열 수 있다.</small>
+          </p>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>VSCode 원격 개발 설정 short cut</h4>
+          <pre><code class="hljs sh" data-trim>
+            code --folder-uri "vscode-remote://ssh-remote+hils/home/ppark/projects/hilsdb"
+          </code></pre>
+          <p>
+            <small>로컬 PC의 터미널에서 위를 입력해서 한 번에 열 수도 있다.</small>
+          </p>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>프로젝트 디렉터리 구조</h4>
+          <pre><code data-trim data-line-numbers="3,14|2,9-11|12-13|6-8|4"   data-fragment-index="2">
+            .
+            ├── database.ini
+            ├── requirements.txt
+            ├── schema_cases_hindcasts.py
+            ├── schema_cases_observations.py
+            ├── data
+            │   ├── cases_hindcasts
+            │   └── cases_observations
+            ├── db
+            │   ├── config.py
+            │   └── database.py
+            ├── utils
+            │   └── raster.py
+            └── venv-hilsdb
+          </code></pre>
+          <ul>
+            <li
+              style="font-size: 20px"
+              class="fragment highlight-current-green"
+              data-fragment-index="1"
+            >
+              파이썬 가상환경 관련
+            </li>
+            <li
+              style="font-size: 20px"
+              class="fragment highlight-current-green"
+              data-fragment-index="2"
+            >
+              데이터베이스 관련
+            </li>
+            <ul>
+              <li
+                style="font-size: 20px"
+                class="fragment highlight-current-green"
+                data-fragment-index="2"
+              >
+                database.ini - DB 연결 문자열이 저장된 파일 (DB 연결 문자열 수정시 이 파일만
+                수정하면 됨!)
+              </li>
+              <li
+                style="font-size: 20px"
+                class="fragment highlight-current-green"
+                data-fragment-index="2"
+              >
+                db/config.py - database.ini 파일을 읽어서 호스트명, 포트번호, 데이터베이스명,
+                사용자명, 비밀번호 등의 정보를 Dictionary 형태로 출력
+              </li>
+              <li
+                style="font-size: 20px"
+                class="fragment highlight-current-green"
+                data-fragment-index="2"
+              >
+                db/database.py - 커스텀 데이터베이스 클래스
+              </li>
+            </ul>
+            <li
+              style="font-size: 20px"
+              class="fragment highlight-current-green"
+              data-fragment-index="3"
+            >
+              커스텀 유틸리티 함수. raster.py는 netCDF -> PostGIS WKB(Well-Known Binary) 포맷 변환
+              시 필요
+            </li>
+            <li
+              style="font-size: 20px"
+              class="fragment highlight-current-green"
+              data-fragment-index="4"
+            >
+              변환할 netCDF 파일들과 DB에 적재할 CSV 파일들이 저장되는 디렉터리
+            </li>
+            <li
+              style="font-size: 20px"
+              class="fragment highlight-current-green"
+              data-fragment-index="5"
+            >
+              위험사례 재현정보 관련 변환 및 적재 실행 파이썬 프로그램
+            </li>
+          </ul>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>코드 설명</h4>
+          <pre><code class="hljs python" data-trim code-overflow="wrap">
+            if __name__ == "__main__":
+                """ 데이터베이스 연결 """
+                params = config()
+                db = Database(**params)
+
+                """ 스키마 제거 (cases_hindcasts) """
+                db.execute(query=drop_schema_cases_hindcasts_sql)
+
+                """ 스키마 생성 (cases_hindcasts) """
+                db.execute(query=create_schema_cases_hindcasts_sql)
+
+                """ 테이블 생성 (categories, datasets, variables, datas) """
+                db.execute(query=create_table_categories_sql)
+                db.execute(query=create_table_datasets_sql)
+                db.execute(query=create_table_variables_sql)
+                db.execute(query=create_table_datas_sql)
+
+                """ 테이블 데이터 모두 삭제 """
+                db.execute(query=truncate_table_categories_sql)
+
+                """ 다수의 데이터를 categories 테이블에 INSERT """
+                db.execute_many(
+                    query=insert_categories_sql,
+                    vars_list=[
+                        ["typhoon"],  # 태풍
+                        ["gale"],  # 강풍
+                        ["swell"],  # 고파
+                        ["rain"],  # 폭우
+                        ["snow"],  # 폭설
+                        ["fog"],  # 해무
+                    ],
+                )
+
+                """
+                태풍 디렉터리에서 각 netCDF 파일 별로 일괄 적재할 CSV 파일 생성해서 일괄 적재
+                """
+                typhoon_dir = "/home/ppark/projects/hilsdb/data/cases_hindcasts/typhoons"
+                category_id = 1
+
+                # search for nc files in the directory and its subdirectories recursively
+                flist = glob.glob(f"{typhoon_dir}/**/*.nc", recursive=True)
+
+                # write csv file for each netCDF file and import the csv file into database
+                for ncfile in flist:
+                    # if dataset already exists, continue to next iteration
+                    # TODO: later...
+
+                    # create csv file
+                    csvfile = os.path.splitext(ncfile)[0] + ".csv"
+                    logger.info("--- CREATING CSV FILE ---")
+                    logger.info(f"\t\t{os.path.basename(ncfile)} -> {os.path.basename(csvfile)} ")
+                    logger.info("--- CREATING CSV FILE ---")
+                    write_datas_into_csv(db=db, ncfile=ncfile, category_id=category_id)
+
+                    # insert the csv file into database
+                    logger.info("--- INSERTING CSV FILE INTO DB ---")
+                    logger.info(f"\t\t{os.path.basename(csvfile)} 파일 적재 중")
+                    logger.info("--- INSERTING CSV FILE INTO DB ---")
+                    psql_command = f"psql -h {params['host']} -p {params['port']} -U {params['user']} -d {params['dbname']} -c \"\copy cases_hindcasts.datas(dataset_id, var_id, time_id, rast) from {csvfile} with (FORMAT csv, DELIMITER ',', HEADER true, NULL '')\""
+                    result = subprocess.run(
+                        psql_command,
+                        shell=True,
+                        env=dict(os.environ, PGPASSWORD=params["password"]),
+                    )
+
+          </code></pre>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>실행 방법</h4>
+          <pre><code class="hljs sh" data-trim>
+            # 가상환경 활성화
+            source venv-hilsdb/bin/activate
+
+            # 프로그램 실행
+            python schema_cases_hindcasts.py
+          </code></pre>
+        </section>
       </div>
     </div>
 
@@ -319,6 +589,7 @@
       Reveal.initialize({
         hash: true,
         slideNumber: 'c/t',
+        autoPlayMedia: true,
 
         // Learn about plugins: https://revealjs.com/plugins/
         plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
