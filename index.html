@@ -35,15 +35,15 @@
             <li>개요</li>
             <li>SCP로 원격 호스트간 파일 이동</li>
             <li>PSQL을 이용한 SQL 쿼리</li>
-            <li>DB 적재</li>
+            <li>변환 및 적재 프로그램</li>
           </ol>
         </section>
 
-        <section data-transition="slide">
+        <section data-transition="slide" data-background="#89B640">
           <h2>개요</h2>
         </section>
 
-        <section data-transition="slide">
+        <section data-transition="slide" data-background="#89B640">
           <h4>알아야 할 것들</h4>
           <ul>
             <li style="font-size: 30px">SSH - 원격 호스트 접속 프로그램</li>
@@ -58,19 +58,33 @@
           </ul>
         </section>
 
-        <section data-transition="slide">
+        <section data-transition="slide" data-background="#89B640">
           <h4>DB 설계도 - 전체</h4>
           <img data-src="dist/images/overview/erd_1.png" />
         </section>
 
-        <section data-transition="slide">
+        <section data-transition="slide" data-background="#89B640">
           <h4>DB 설계도 - 위험사례 재현정보</h4>
           <img data-src="dist/images/overview/erd_2.png" />
         </section>
 
-        <section data-transition="slide">
+        <section data-transition="slide" data-background="#89B640">
           <h4>DB 적재 순서도</h4>
           <img data-src="dist/images/overview/flowchart.png" />
+          <ol>
+            <li style="font-size: 20px">
+              보시다시피 변환 및 적재 프로그램을 실행하기에 앞서 먼저 원격 호스트 서버 간 netCDF
+              파일들을 복사 이동해야한다. (all4ocean -> hils) 따라서, 먼저 SCP 프로그램을 이용해
+              파일을 복사 이동하는 방법에 대해 알아볼 것이다.
+            </li>
+            <li style="font-size: 20px">
+              그 다음, 데이터를 데이터베이스에 적재하기 위해 알아야할 PSQL 프로그램 사용법에 대해서
+              간단히 알아볼 것이다.
+            </li>
+            <li style="font-size: 20px">
+              최종적으로, 파이썬 기반의 변환 및 적재 프로그램 실행법에 대해서 알아볼 것이다.
+            </li>
+          </ol>
         </section>
 
         <section data-transition="slide" data-background="#4d7e65">
@@ -289,7 +303,7 @@
         </section>
 
         <section data-transition="slide" data-background="#008bb9">
-          <h2>DB 적재</h2>
+          <h2>변환 및 적재 프로그램</h2>
         </section>
       </div>
     </div>
