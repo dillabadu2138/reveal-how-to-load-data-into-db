@@ -49,7 +49,7 @@
             <li style="font-size: 30px">SSH - 원격 호스트 접속 프로그램</li>
             <li style="font-size: 30px">SCP - 원격 호스트 간 파일 이동 프로그램</li>
             <li style="font-size: 30px">
-              PSQL - 대화형 PostgreSQL 프로그램(적재 및 SQL 쿼리 실행)
+              PSQL - 대화형 PostgreSQL 프로그램(데이터 적재 및 SQL 쿼리 실행)
             </li>
             <li style="font-size: 30px">
               파이썬 가상환경(virtualenv) - netCDF 파일을 변환하고 DB에 적재하는데 필요한 파이썬
@@ -66,10 +66,24 @@
         <section data-transition="slide" data-background="#89B640">
           <h4>DB 설계도 - 위험사례 재현정보</h4>
           <img data-src="dist/images/overview/erd_2.png" />
+          <p><small>테이블 설계 시 고려사항</small></p>
+          <ul>
+            <li style="font-size: 20px">
+              한 netCDF 데이터셋 당 변수 및 시간 별로 격자형 공간 데이터가 있다.
+            </li>
+            <li style="font-size: 20px">
+              위경도 지점 별로 값을 저장하도록 테이블을 설계한다면 더 복잡해지고 쿼리 시간이 길어질
+              거라 예상했다.
+            </li>
+            <li style="font-size: 20px">
+              그래서 사용자가 변수(variable)와 시간(timestep)을 선택하면 위경도 격자 그리드 데이터를
+              PostGIS raster 형식으로 통째로 조회할 수 있도록 설계했다.
+            </li>
+          </ul>
         </section>
 
         <section data-transition="slide" data-background="#89B640">
-          <h4>DB 적재 순서도</h4>
+          <h4>순서도</h4>
           <img data-src="dist/images/overview/flowchart.png" />
           <ol>
             <li style="font-size: 20px">
@@ -140,15 +154,16 @@
 
         <section data-transition="slide" data-background="#4d7e65">
           <h4>SCP 예시</h4>
-          <pre><code class="hljs sh" data-trim data-line-numbers="1-2|4-7"><script type="text/template" >
+          <pre><code class="hljs sh" data-trim data-line-numbers="1-2|4-8" style="font-size: 16px;">
             # ssh [user@]hostname [command]
             ssh ppark@211.178.39.246 -p 12522
 
             # scp [SOURCE] [TARGET] [OPTIONS]
-            scp -r -P 7001 \
-            opr@211.178.39.246:/home/opr/jspark/00_PROJECT/2022y/02_1MW/01_rawdata/04_interm/03_HYCOM/01_typhoon/20110626 \
-            /home/ppark/projects/hilsdb/data/cases_hindcasts/typhoons
-          </script></code></pre>
+            scp \
+              -r -P 7001 \
+              opr@211.178.39.246:/home/opr/jspark/00_PROJECT/2022y/02_1MW/02_product/01_typhoon/20110626 \
+              /home/ppark/projects/hilsdb/data/cases_hindcasts/typhoons
+          </code></pre>
           <ul>
             <li style="font-size: 20px">
               먼저 ssh로 hils 원격 호스트 서버에 접속한 다음에 scp로 다른 원격 호스트 서버인
@@ -403,7 +418,7 @@
 
         <section data-transition="slide" data-background="#008bb9">
           <h4>VSCode 원격 개발 설정 short cut</h4>
-          <pre><code class="hljs sh" data-trim>
+          <pre><code class="hljs sh" data-trim style="font-size: 20px;">
             code --folder-uri "vscode-remote://ssh-remote+hils/home/ppark/projects/hilsdb"
           </code></pre>
           <p>
@@ -495,30 +510,35 @@
         </section>
 
         <section data-transition="slide" data-background="#008bb9">
+          <h4>변환 & 적재 프로그램 순서도</h4>
+          <img data-src="dist/images/ingestion/ingestion_1.png" style="height: 400px" />
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
           <h4>코드 설명</h4>
-          <pre><code class="hljs python" data-trim code-overflow="wrap">
+          <pre><code class="hljs python" data-trim style="font-size: 15px;">
             if __name__ == "__main__":
                 """ 데이터베이스 연결 """
                 params = config()
                 db = Database(**params)
 
                 """ 스키마 제거 (cases_hindcasts) """
-                db.execute(query=drop_schema_cases_hindcasts_sql)
+                # db.execute(query=drop_schema_cases_hindcasts_sql)
 
                 """ 스키마 생성 (cases_hindcasts) """
-                db.execute(query=create_schema_cases_hindcasts_sql)
+                # db.execute(query=create_schema_cases_hindcasts_sql)
 
                 """ 테이블 생성 (categories, datasets, variables, datas) """
-                db.execute(query=create_table_categories_sql)
-                db.execute(query=create_table_datasets_sql)
-                db.execute(query=create_table_variables_sql)
-                db.execute(query=create_table_datas_sql)
+                # db.execute(query=create_table_categories_sql)
+                # db.execute(query=create_table_datasets_sql)
+                # db.execute(query=create_table_variables_sql)
+                # db.execute(query=create_table_datas_sql)
 
                 """ 테이블 데이터 모두 삭제 """
-                db.execute(query=truncate_table_categories_sql)
+                # db.execute(query=truncate_table_categories_sql)
 
                 """ 다수의 데이터를 categories 테이블에 INSERT """
-                db.execute_many(
+                # db.execute_many(
                     query=insert_categories_sql,
                     vars_list=[
                         ["typhoon"],  # 태풍
@@ -555,7 +575,14 @@
                     logger.info("--- INSERTING CSV FILE INTO DB ---")
                     logger.info(f"\t\t{os.path.basename(csvfile)} 파일 적재 중")
                     logger.info("--- INSERTING CSV FILE INTO DB ---")
-                    psql_command = f"psql -h {params['host']} -p {params['port']} -U {params['user']} -d {params['dbname']} -c \"\copy cases_hindcasts.datas(dataset_id, var_id, time_id, rast) from {csvfile} with (FORMAT csv, DELIMITER ',', HEADER true, NULL '')\""
+                    psql_command = f"""
+                    psql \
+                      -h {params['host']} \
+                      -p {params['port']} \
+                      -U {params['user']} \
+                      -d {params['dbname']} \
+                      -c \"\copy cases_hindcasts.datas(dataset_id, var_id, time_id, rast) from {csvfile} with (FORMAT csv, DELIMITER ',', HEADER true, NULL '')\"
+                    """
                     result = subprocess.run(
                         psql_command,
                         shell=True,
@@ -563,6 +590,11 @@
                     )
 
           </code></pre>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>CSV 파일</h4>
+          <img data-src="dist/images/ingestion/ingestion_2.png" style="height: 400px" />
         </section>
 
         <section data-transition="slide" data-background="#008bb9">
@@ -574,6 +606,28 @@
             # 프로그램 실행
             python schema_cases_hindcasts.py
           </code></pre>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>결과 확인</h4>
+          <pre><code class="hljs SQL" data-trim>
+            -- 데이터셋 조회
+            SELECT * FROM cases_hindcasts.datasets;
+
+            -- 변수 조회
+            SELECT * FROM cases_hindcasts.variables;
+
+            -- 데이터 갯 수 조회
+            SELECT count(*) cases_hindcasts.datas;
+
+            -- datas 테이블 사이즈 조회
+            SELECT pg_size_pretty( pg_total_relation_size('cases_hindcasts.datas') );
+          </code></pre>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>결과 확인</h4>
+          <img data-src="dist/images/ingestion/ingestion_3.png" style="height: 400px" />
         </section>
       </div>
     </div>
