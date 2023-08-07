@@ -512,33 +512,54 @@
         <section data-transition="slide" data-background="#008bb9">
           <h4>변환 & 적재 프로그램 순서도</h4>
           <img data-src="dist/images/ingestion/ingestion_1.png" style="height: 400px" />
+          <ol>
+            <li
+              style="font-size: 20px"
+              class="fragment highlight-current-green"
+              data-fragment-index="1"
+            >
+              netCDF 파일을 읽는다.
+            </li>
+            <li
+              style="font-size: 20px"
+              class="fragment highlight-current-green"
+              data-fragment-index="2"
+            >
+              모든 변수 & 타임스텝 별로 반복문을 돌며 바이너리로 변환하여 일괄 적재용 CSV 파일에
+              내용을 담는다.
+            </li>
+            <li
+              style="font-size: 20px"
+              class="fragment highlight-current-green"
+              data-fragment-index="3"
+            >
+              psql 프로그램의 COPY FROM 구문으로 DB에 래스터 데이터를 적재한다.
+            </li>
+          </ol>
         </section>
 
         <section data-transition="slide" data-background="#008bb9">
-          <h4>코드 설명</h4>
-          <pre><code class="hljs python" data-trim style="font-size: 15px;">
+          <h4>코드 설명 1</h4>
+          <pre><code class="hljs python" data-trim data-line-numbers="2-4|6-10|12-32" style="font-size: 15px;">
             if __name__ == "__main__":
-                """ 데이터베이스 연결 """
+                """데이터베이스 연결"""
                 params = config()
                 db = Database(**params)
 
-                """ 스키마 제거 (cases_hindcasts) """
-                # db.execute(query=drop_schema_cases_hindcasts_sql)
-
-                """ 스키마 생성 (cases_hindcasts) """
-                # db.execute(query=create_schema_cases_hindcasts_sql)
-
-                """ 테이블 생성 (categories, datasets, variables, datas) """
-                # db.execute(query=create_table_categories_sql)
-                # db.execute(query=create_table_datasets_sql)
-                # db.execute(query=create_table_variables_sql)
-                # db.execute(query=create_table_datas_sql)
-
-                """ 테이블 데이터 모두 삭제 """
-                # db.execute(query=truncate_table_categories_sql)
-
-                """ 다수의 데이터를 categories 테이블에 INSERT """
-                # db.execute_many(
+                """ 스키마 제거(cases_hindcasts) """
+                db.execute(query=drop_schema_cases_hindcasts_sql)
+            
+                """ 스키마 생성(cases_hindcasts) """
+                db.execute(query=create_schema_cases_hindcasts_sql)
+            
+                """ 테이블 생성(categories, datasets, variables, datas) """
+                db.execute(query=create_table_categories_sql)
+                db.execute(query=create_table_datasets_sql)
+                db.execute(query=create_table_variables_sql)
+                db.execute(query=create_table_datas_sql)
+            
+                """ categories 테이블에 자료 INSERT """
+                db.execute_many(
                     query=insert_categories_sql,
                     vars_list=[
                         ["typhoon"],  # 태풍
@@ -549,32 +570,39 @@
                         ["fog"],  # 해무
                     ],
                 )
-
+            
                 """
-                태풍 디렉터리에서 각 netCDF 파일 별로 일괄 적재할 CSV 파일 생성해서 일괄 적재
+                  태풍 디렉터리에서 각 netCDF 파일 별로 일괄 적재할 CSV 파일 생성해서 일괄 적재
                 """
+                # specify direcotry and category_id
                 typhoon_dir = "/home/ppark/projects/hilsdb/data/cases_hindcasts/typhoons"
                 category_id = 1
-
+            
                 # search for nc files in the directory and its subdirectories recursively
                 flist = glob.glob(f"{typhoon_dir}/**/*.nc", recursive=True)
-
+            
                 # write csv file for each netCDF file and import the csv file into database
                 for ncfile in flist:
                     # if dataset already exists, continue to next iteration
-                    # TODO: later...
-
+                    dataset_name = os.path.splitext(os.path.basename(ncfile))[0]
+                    result = db.execute(
+                        query=f"SELECT EXISTS(SELECT * FROM cases_hindcasts.datasets WHERE dataset_name='{dataset_name}');"
+                    )
+                    row_already_exists = result[0]
+            
                     # create csv file
-                    csvfile = os.path.splitext(ncfile)[0] + ".csv"
                     logger.info("--- CREATING CSV FILE ---")
-                    logger.info(f"\t\t{os.path.basename(ncfile)} -> {os.path.basename(csvfile)} ")
-                    logger.info("--- CREATING CSV FILE ---")
-                    write_datas_into_csv(db=db, ncfile=ncfile, category_id=category_id)
-
+                    if row_already_exists == True:
+                        logger.info(f"\t{dataset_name} 이미 존재함!")
+                        continue
+                    else:
+                        logger.info(f"\t{dataset_name}.csv 생성 시작")
+                        write_datas_into_csv(db=db, ncfile=ncfile, category_id=category_id)
+            
                     # insert the csv file into database
+                    csvfile = os.path.splitext(ncfile)[0] + ".csv"
                     logger.info("--- INSERTING CSV FILE INTO DB ---")
-                    logger.info(f"\t\t{os.path.basename(csvfile)} 파일 적재 중")
-                    logger.info("--- INSERTING CSV FILE INTO DB ---")
+                    logger.info(f"\t{os.path.basename(csvfile)} 파일 적재 중")
                     psql_command = f"""
                     psql \
                       -h {params['host']} \
@@ -588,13 +616,120 @@
                         shell=True,
                         env=dict(os.environ, PGPASSWORD=params["password"]),
                     )
-
           </code></pre>
+          <ul>
+            <li style="font-size: 20px">
+              데이터베이스 연결 파라미터 정보들을 가져와서 데이터베이스에 연결한다.
+            </li>
+            <li style="font-size: 20px">처음부터 다 지우고 다시 생성한다.</li>
+            <li style="font-size: 20px">
+              테이블을 생성하고 categoreis 테이블에 위험사례 카테고리 6개를 입력한다.
+            </li>
+          </ul>
+        </section>
+
+        <section data-transition="slide" data-background="#008bb9">
+          <h4>코드 설명 2</h4>
+          <pre><code class="hljs python" data-trim data-line-numbers="6-29|31-67" style="font-size: 15px;">
+            if __name__ == "__main__":
+                """데이터베이스 연결"""
+                params = config()
+                db = Database(**params)
+            
+                """ 스키마 제거(cases_hindcasts) """
+                # db.execute(query=drop_schema_cases_hindcasts_sql)
+            
+                """ 스키마 생성(cases_hindcasts) """
+                # db.execute(query=create_schema_cases_hindcasts_sql)
+            
+                """ 테이블 생성(categories, datasets, variables, datas) """
+                # db.execute(query=create_table_categories_sql)
+                # db.execute(query=create_table_datasets_sql)
+                # db.execute(query=create_table_variables_sql)
+                # db.execute(query=create_table_datas_sql)
+            
+                """ categories 테이블에 자료 INSERT """
+                # db.execute_many(
+                #     query=insert_categories_sql,
+                #     vars_list=[
+                #         ["typhoon"],  # 태풍
+                #         ["gale"],  # 강풍
+                #         ["swell"],  # 고파
+                #         ["rain"],  # 폭우
+                #         ["snow"],  # 폭설
+                #         ["fog"],  # 해무
+                #     ],
+                # )
+            
+                """
+                  태풍 디렉터리에서 각 netCDF 파일 별로 일괄 적재할 CSV 파일 생성해서 일괄 적재
+                """
+                # specify direcotry and category_id
+                typhoon_dir = "/home/ppark/projects/hilsdb/data/cases_hindcasts/typhoons"
+                category_id = 1
+            
+                # search for nc files in the directory and its subdirectories recursively
+                flist = glob.glob(f"{typhoon_dir}/**/*.nc", recursive=True)
+            
+                # write csv file for each netCDF file and import the csv file into database
+                for ncfile in flist:
+                    # create csv file
+                    logger.info("--- CREATING CSV FILE ---")
+                    write_datas_into_csv(
+                        db=db,
+                        ncfile=ncfile,
+                        category_id=category_id,
+                    )
+            
+                    # insert the csv file into database
+                    csvfile = os.path.splitext(ncfile)[0] + ".csv"
+                    logger.info("--- INSERTING CSV FILE INTO DB ---")
+                    logger.info(f"{os.path.basename(csvfile)} 파일을 가지고 datas 테이블에 일괄 적재한다.")
+                    psql_command = f"""
+                    psql \
+                      -h {params['host']} \
+                      -p {params['port']} \
+                      -U {params['user']} \
+                      -d {params['dbname']} \
+                      -c \"\copy cases_hindcasts.datas(dataset_id, var_id, time_id, rast) from {csvfile} with (FORMAT csv, DELIMITER ',', HEADER true, NULL '')\"
+                    """
+                    result = subprocess.run(
+                        psql_command,
+                        shell=True,
+                        env=dict(os.environ, PGPASSWORD=params["password"]),
+                    )
+        
+          </code></pre>
+          <ul>
+            <li style="font-size: 20px">
+              한 번 스키마랑 테이블을 만들고 난 다음에는 처음부터 다시 엎지 않을거면 이 부분을
+              주석처리한다.
+            </li>
+            <ul>
+              <li style="font-size: 20px">스키마 제거 부분</li>
+              <li style="font-size: 20px">스키마 생성 부분</li>
+              <li style="font-size: 20px">테이블 생성 부분</li>
+              <li style="font-size: 20px">categories 테이블 자료 INSERT 부분</li>
+            </ul>
+            <li style="font-size: 20px">
+              태풍 디렉터리에 있는 모든 netCDF 파일들을 읽어서 변환 & 적재한다.
+            </li>
+          </ul>
         </section>
 
         <section data-transition="slide" data-background="#008bb9">
           <h4>CSV 파일</h4>
           <img data-src="dist/images/ingestion/ingestion_2.png" style="height: 400px" />
+          <ul>
+            <li style="font-size: 20px">
+              생성된 CSV 파일은 이렇게 datas 테이블의 각 column에 들어갈 정보들이 쌓여있는 것을 알
+              수 있다.
+            </li>
+            <li style="font-size: 20px">
+              이 CSV 파일은 한 netCDF 파일에 해당하는 모든 변수 및 시간 별 래스터 데이터를 담고
+              있다. 데이터베이스에 일괄 적재하기 위한 파일이다.
+            </li>
+          </ul>
         </section>
 
         <section data-transition="slide" data-background="#008bb9">
@@ -603,8 +738,11 @@
             # 가상환경 활성화
             source venv-hilsdb/bin/activate
 
-            # 프로그램 실행
+            # 변환 및 적재 파이썬 프로그램 실행
             python schema_cases_hindcasts.py
+
+            # 가상환경 비활성화
+            deactivate
           </code></pre>
         </section>
 
