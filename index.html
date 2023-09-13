@@ -33,7 +33,7 @@
           <h2>목차</h2>
           <ol>
             <li>개요</li>
-            <li>SCP로 원격 호스트간 파일 이동</li>
+            <li>SCP 또는 RSYNC로 원격 호스트간 파일 이동</li>
             <li>PSQL을 이용한 SQL 쿼리</li>
             <li>VSCode를 이용한 원격 개발</li>
             <li>변환 및 적재 프로그램</li>
@@ -122,7 +122,7 @@
         <section data-transition="slide" data-background="#4d7e65">
           <h4>SCP 문법</h4>
           <pre><code class="hljs sh" data-trim>
-            scp [SOURCE] [TARGET] [OPTIONS]
+            scp [OPTIONS] [SOURCE] [TARGET] 
           </code></pre>
           <ul>
             <li style="font-size: 20px">
@@ -135,7 +135,7 @@
             </li>
             <ul>
               <li style="font-size: 20px">
-                SOURCE는 우리가 복사해서 가져올 파일 또는 디렉터리 경로
+                SOURCE는 우리가 복사해서 가져올 원본 파일 또는 디렉터리 경로
               </li>
               <li style="font-size: 20px">
                 TARGET은 우리가 복사한 것을 갔다 붙혀넣을 파일 또는 디렉터리 경로
@@ -145,9 +145,9 @@
               OPTIONS은 너무 많은데, 우리가 꼭 알아야 할 것은 -P와 -r 옵션이다.
             </li>
             <ul>
-              <li style="font-size: 20px">-P - 원격 호스트에 연결할 포트번호 지정</li>
+              <li style="font-size: 20px">-P: 원격 호스트에 연결할 포트번호 지정</li>
               <li style="font-size: 20px">
-                -r - 하위 디렉터리를 포함한 모든 디텍토리를 재귀적으로(recursively) 복사
+                -r: 하위 디렉터리를 포함한 모든 디텍토리를 재귀적으로(recursively) 복사
               </li>
             </ul>
           </ul>
@@ -167,16 +167,21 @@
           </code></pre>
           <ul>
             <li style="font-size: 20px">
-              먼저 ssh로 hils 원격 호스트 서버에 접속한 다음에 scp로 다른 원격 호스트 서버인
-              all4ocean에 위치한 netCDF 파일을 가져와 보자. 따라서, SOURCE는 [username@]host:[path]
-              형식가 되는데 TARGET은 이미 hils에 접속한 상태이므로 로컬 경로 형식이 된다.
+              먼저 ssh로 hils 원격 호스트 서버에 접속한다(ssh는 일반적으로 원격 호스트에 로그인하고
+              명령을 실행하는 데 사용된다).
             </li>
             <li style="font-size: 20px">
-              반대로 all4ocean에 접속해서 할 수도 있다. 그러면 SOURCE가 로컬 경로 형식이고 TARGET이
-              [username@]host:[path] 형식이 된다.
-            </li>
-            <li style="font-size: 20px">
-              ssh는 일반적으로 원격 호스트에 로그인하고 명령을 실행하는 데 사용된다.
+              그 다음에 scp로 다른 원격 호스트 서버인 all4ocean에 위치한 netCDF 파일을 가져와 보자.
+              <ul>
+                <li style="font-size: 20px">
+                  SOURCE는 원본 파일이 있는 원격 서버 경로가 되고, TARGET은 이미 hils에 접속한
+                  상태이므로 로컬 경로 형식이 된다.
+                </li>
+                <li style="font-size: 20px">
+                  반대로 all4ocean에 접속해서 할 수도 있다. 그러면 SOURCE가 로컬 경로 형식이고
+                  TARGET이 원격 경로 형식이 된다.
+                </li>
+              </ul>
             </li>
           </ul>
         </section>
@@ -184,6 +189,112 @@
         <section data-transition="slide" data-background="#4d7e65">
           <h4>SCP 예시</h4>
           <img data-src="dist/images/scp/scp_2.jpg" />
+        </section>
+
+        <section data-transition="slide" data-background="#4d7e65">
+          <h4>RSYNC 문법</h4>
+          <pre><code class="hljs sh" data-trim>
+            rsync [OPTIONS] [SRC] [DEST] 
+          </code></pre>
+          <ul>
+            <li style="font-size: 20px">
+              Remote Sync의 약자로 파일 및 디렉터리 동기화를 위한 프로토콜이자 UNIX용 커맨드라인
+              유틸리티 프로그램이다. (개인적으로 rsync가 scp보다 빠르다고 생각함...)
+            </li>
+            <li style="font-size: 20px">
+              SRC와 DEST으로 로컬 경로를 지정하거나 [username@]host:[path] 형식으로 원격 호스트의
+              경로를 지정할 수 있다.
+            </li>
+            <ul>
+              <li style="font-size: 20px">
+                SRC는 우리가 복사해서 가져올 원본 파일 또는 디렉터리 경로
+              </li>
+              <li style="font-size: 20px">
+                DEST는 우리가 복사한 것을 갔다 붙혀넣을 파일 또는 디렉터리 경로
+              </li>
+            </ul>
+            <li style="font-size: 20px">OPTIONS은 너무 많다.</li>
+            <ul>
+              <li style="font-size: 20px">
+                -r: 하위 디렉터리를 포함한 모든 디텍토리를 재귀적으로(recursively) 복사
+              </li>
+              <li style="font-size: 20px">-e: 원격에서 사용할 쉘을 명시하는 옵션</li>
+              <li style="font-size: 20px">--include=PATTERN: PATTERN과 매칭하는 파일 포함</li>
+              <li style="font-size: 20px">--exclude=PATTERN: PATTERN과 매칭하는 파일 제외</li>
+              <li style="font-size: 20px">
+                Note that the --include=... option needs to come before the --exclude=... option,
+                because we need the former to take precedence over the latter when a file matches
+                both patterns.
+              </li>
+              <li style="font-size: 20px">
+                --partial: rsync는 전송중에 인터럽트가 발생하면 전송하던 파일을 삭제하는게
+                기본값이다. 이 옵션을 사용하면 전송된 부분파일을 남기고 다음부분부터 재전송 할 수
+                있게하여 속도를 빠르게 할 수 있다.
+              </li>
+            </ul>
+          </ul>
+        </section>
+
+        <section data-transition="slide" data-background="#4d7e65">
+          <h4>RSYNC 예시 (쉘스크립트 코드)</h4>
+          <pre><code class="hljs sh" data-trim data-line-numbers="1-13|15-34" style="font-size: 16px;">
+            #!/bin/bash
+            # 실행 방법
+            # cd /data2/rawdata/typhoons
+            # sudo bash ./copy_files_typhoons.sh
+            
+            # initialize an array of folders to copy from the remote host(opr@211.178.39.246)
+            dirs=(
+              "20110626" "20110808" "20110903" "20120619" "20120719" "20120802" "20120808" "20120828" "20120830" "20120917" "20130620" "20130714" "20130822" "20130830" "20130904" "20131007" "20131008" "20140710" "20140725" "20140810" "20140923" "20141006" "20141013" "20150712" "20150717" "20150726" "20150809" "20150825" "20150909" "20150929" "20160708" "20160904" "20160907" "20160914" "20160920" "20160927" "20161005" "20170704" "20170729" "20170730" "20170807" "20170917" "20180704" "20180711" "20180722" "20180728" "20180813" "20180815" "20180817" "20180823" "20180904" "20180930" "20181006" "20190720" "20190726" "20190806" "20190811" "20190815" "20190907" "20190908" "20190923" "20191003" "20191012" "20200804" "20200827" "20200902" "20200907"
+            )
+            
+            # remote and local host directories
+            remote_typhoon_dir="/home/opr/jspark/00_PROJECT/2022y/02_1MW/02_product/01_typhoon"
+            local_typhoon_dir="/data2/rawdata/typhoons"
+            
+            # loop over remote host directories
+            for dir in ${dirs[@]};
+            do
+                # check if a directory already exists in the working directory
+                if [ -d $dir ]
+                then
+                    echo "We've alreay downloaded $dir"
+                else
+                    echo "We're downloading $dir..."
+            
+                    # copy files from remote host to local host
+                    rsync -r \
+                        -e 'sshpass -p dlqkdgml ssh -p 7001 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=quiet' \
+                        --include='*/' \
+                        --include='*.nc' \
+                        --exclude='*' \
+                        opr@211.178.39.246:$remote_typhoon_dir/$dir \
+                        $local_typhoon_dir
+                fi
+            done
+          </code></pre>
+          <ul>
+            <li style="font-size: 20px">
+              먼저 원격 호스트로 부터 다운받을 폴더명을 배열로 초기화하고 원격 및 로컬 베이스
+              디렉터리를 설정한다.
+            </li>
+            <li style="font-size: 20px">
+              폴더명 별로 순회하면서 이미 다운받았다면 스킵하고 다운받은적이 없다면 rsync를 이용해
+              다운로드한다.
+            </li>
+          </ul>
+        </section>
+
+        <section data-transition="slide" data-background="#4d7e65">
+          <h4>전송 확인</h4>
+          <pre><code class="hljs sh" data-trim data-line-numbers="1-2|4-8" style="font-size: 16px;">
+            # ssh [user@]hostname [command]
+            ssh ppark@211.178.39.246 -p 12522
+
+            # check disk usage using the du command 
+            du -h /data2/rawdata/typhoons
+          </code></pre>
+          <img data-src="dist/images/scp/scp_3.jpg" />
         </section>
 
         <section data-transition="slide" data-background="#0064a5">
